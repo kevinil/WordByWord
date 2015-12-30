@@ -14,18 +14,20 @@ class ViewController: UIViewController {
     var masks = [UIView]()
     var showTimer = NSTimer()
     var textIndex = 0
+    var alphaArray : [CGFloat] = [0.7, 0, 0.3, 0.7, 0.4, 0.8, 0.5, 0]
+    var alphaCount = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupText()
         createMaskViews()
-        showTimer = NSTimer.scheduledTimerWithTimeInterval(0.05, target: self, selector: "showText", userInfo: nil, repeats: false)
+        showTimer = NSTimer.scheduledTimerWithTimeInterval(0.05, target: self, selector: "readyShowText", userInfo: nil, repeats: false)
     }
     
     func setupText() {
         kevinText = UILabel(frame: CGRectMake(50,100,300,500))
         kevinText.numberOfLines = 0
-        kevinText.text = "轻雨轻步，仰止一粟嘲身处。\n浊酒浊情，饮胜孤吟浪剑行。\n\nKeviNil"
+        kevinText.text = "轻雨轻步，仰止一粟嘲身处。\n浊酒浊情，饮胜孤吟浪剑行。\nVidiViniVici.1230998\n\nKeviNil"
         kevinText.font = UIFont(name: "Courier", size: 20)
         kevinText.sizeToFit()
         kevinText.textColor = .whiteColor()
@@ -34,15 +36,15 @@ class ViewController: UIViewController {
     
     func createMaskViews() {
         print("kevin frame \(kevinText.frame)")
-        for index in 0..<26 {
-            let maskView = UIView(frame: CGRectMake(50 + CGFloat(index % 13) * 20, 98 + CGFloat(index / 13) * 20, 23, 23))
+        for index in 0..<39 {
+            let maskView = UIView(frame: CGRectMake(50 + CGFloat(index % 13) * 20, 98 + CGFloat(index / 13) * 20, 20, 20))
             maskView.backgroundColor = .blackColor()
             masks.append(maskView)
             view.addSubview(maskView)
         }
     }
     
-    func showText() {
+    func readyShowText() {
         masks.shuffleInPlace()
         for index in 0..<masks.count {
             blinkShow(masks[index], index: index)
@@ -54,32 +56,18 @@ class ViewController: UIViewController {
         UIView.animateWithDuration(0.1, delay: NSTimeInterval(index) * 0.02, options: UIViewAnimationOptions.CurveEaseIn, animations: { () -> Void in
             theView.alpha = 0.3
             }, completion: { (finish) -> Void in
-                UIView.animateWithDuration(0.1, animations: { () -> Void in
-                    theView.alpha = 0.7
-                    }, completion: { (finish) -> Void in
-                        UIView.animateWithDuration(0.1, animations: { () -> Void in
-                            theView.alpha = 0
-                            }, completion: { (finish) -> Void in
-                                UIView.animateWithDuration(0.1, animations: { () -> Void in
-                                    theView.alpha = 0.3
-                                    }, completion: { (finish) -> Void in
-                                        UIView.animateWithDuration(0.1, animations: { () -> Void in
-                                            theView.alpha = 0.7
-                                            }, completion: { (finish) -> Void in
-                                                UIView.animateWithDuration(0.1, animations: { () -> Void in
-                                                    theView.alpha = 0
-                                                    }, completion: { (finish) -> Void in
-                                                        theView.removeFromSuperview()
-                                                        //well, maybe more animation
-                                                })
-                                        })
-                                })
-                        })
-                })
+                self.loopAnimation(theView)
         })
     }
+    
+    func loopAnimation(theView: UIView, index : Int = 0) {
+        UIView.animateWithDuration(0.1, animations: { () -> Void in
+            theView.alpha = self.alphaArray[index]
+            }) { (finish) -> Void in
+                if index != self.alphaArray.count - 1 { self.loopAnimation(theView, index: (index + 1)) }
+        }
+    }
 }
-
 
 //from stackoverflow
 
